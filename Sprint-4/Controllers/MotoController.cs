@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sprint_4.Models;
 using Sprint_4.Services;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Sprint_4.Controllers
 {
@@ -64,6 +65,7 @@ namespace Sprint_4.Controllers
         /// Cria uma nova moto.
         /// </summary>
         [HttpPost]
+        [SwaggerRequestExample(typeof(Moto), typeof(MotoExample))]
         [SwaggerResponse(201, "Moto criada.", typeof(Moto))]
         public async Task<IActionResult> Create([FromBody] Moto moto)
         {
@@ -75,6 +77,7 @@ namespace Sprint_4.Controllers
         /// Atualiza uma moto existente.
         /// </summary>
         [HttpPut("{id}")]
+        [SwaggerRequestExample(typeof(Moto), typeof(MotoExample))]
         [SwaggerResponse(204, "Moto atualizada.")]
         [SwaggerResponse(404, "Moto não encontrada.")]
         public async Task<IActionResult> Update(int id, [FromBody] Moto moto)
@@ -96,5 +99,10 @@ namespace Sprint_4.Controllers
             if (!deleted) return NotFound();
             return NoContent();
         }
+    }
+
+    public class MotoExample : IExamplesProvider<Moto>
+    {
+        public Moto GetExamples() => new Moto { Marca = "Honda", Modelo = "CG 160", Ano = 2022 };
     }
 }

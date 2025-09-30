@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sprint_4.Models;
 using Sprint_4.Services;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Sprint_4.Controllers
 {
@@ -42,6 +43,7 @@ namespace Sprint_4.Controllers
         /// Cria uma nova oficina.
         /// </summary>
         [HttpPost]
+        [SwaggerRequestExample(typeof(Oficina), typeof(OficinaExample))]
         [SwaggerResponse(201, "Oficina criada.", typeof(Oficina))]
         public async Task<IActionResult> Create([FromBody] Oficina oficina)
         {
@@ -53,6 +55,7 @@ namespace Sprint_4.Controllers
         /// Atualiza uma oficina existente.
         /// </summary>
         [HttpPut("{id}")]
+        [SwaggerRequestExample(typeof(Oficina), typeof(OficinaExample))]
         [SwaggerResponse(204, "Oficina atualizada.")]
         [SwaggerResponse(404, "Oficina não encontrada.")]
         public async Task<IActionResult> Update(int id, [FromBody] Oficina oficina)
@@ -74,5 +77,10 @@ namespace Sprint_4.Controllers
             if (!deleted) return NotFound();
             return NoContent();
         }
+    }
+
+    public class OficinaExample : IExamplesProvider<Oficina>
+    {
+        public Oficina GetExamples() => new Oficina { Nome = "Oficina Central", Endereco = "Rua das Flores, 123" };
     }
 }

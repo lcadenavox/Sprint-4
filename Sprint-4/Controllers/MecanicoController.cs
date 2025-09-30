@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sprint_4.Models;
 using Sprint_4.Services;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Sprint_4.Controllers
 {
@@ -42,6 +43,7 @@ namespace Sprint_4.Controllers
         /// Cria um novo mecânico.
         /// </summary>
         [HttpPost]
+        [SwaggerRequestExample(typeof(Mecanico), typeof(MecanicoExample))]
         [SwaggerResponse(201, "Mecânico criado.", typeof(Mecanico))]
         public async Task<IActionResult> Create([FromBody] Mecanico mecanico)
         {
@@ -53,6 +55,7 @@ namespace Sprint_4.Controllers
         /// Atualiza um mecânico existente.
         /// </summary>
         [HttpPut("{id}")]
+        [SwaggerRequestExample(typeof(Mecanico), typeof(MecanicoExample))]
         [SwaggerResponse(204, "Mecânico atualizado.")]
         [SwaggerResponse(404, "Mecânico não encontrado.")]
         public async Task<IActionResult> Update(int id, [FromBody] Mecanico mecanico)
@@ -74,5 +77,10 @@ namespace Sprint_4.Controllers
             if (!deleted) return NotFound();
             return NoContent();
         }
+    }
+
+    public class MecanicoExample : IExamplesProvider<Mecanico>
+    {
+        public Mecanico GetExamples() => new Mecanico { Nome = "João Silva", Especialidade = "Motor" };
     }
 }
