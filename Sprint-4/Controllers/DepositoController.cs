@@ -17,18 +17,34 @@ namespace Sprint_4.Controllers
         }
 
         /// <summary>
-        /// Lista todos os depósitos.
+        /// Lista todos os depósitos com paginação.
         /// </summary>
+        /// <param name="page">Número da página (inicia em 1)</param>
+        /// <param name="pageSize">Quantidade de itens por página</param>
         [HttpGet]
         [SwaggerResponse(200, "Lista de depósitos.", typeof(IEnumerable<Deposito>))]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            return Ok(_service.GetAll().ToList());
+            var query = _service.GetAll();
+            var total = query.Count();
+            var itens = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var result = new
+            {
+                data = itens,
+                links = new[]
+                {
+                    new { rel = "self", href = $"/api/deposito?page={page}&pageSize={pageSize}" },
+                    new { rel = "next", href = $"/api/deposito?page={page+1}&pageSize={pageSize}" }
+                },
+                total
+            };
+            return Ok(result);
         }
 
         /// <summary>
         /// Obtém um depósito pelo ID.
         /// </summary>
+        /// <param name="id">ID do depósito</param>
         [HttpGet("{id}")]
         [SwaggerResponse(200, "Depósito encontrado.", typeof(Deposito))]
         [SwaggerResponse(404, "Depósito não encontrado.")]
@@ -36,7 +52,16 @@ namespace Sprint_4.Controllers
         {
             var deposito = await _service.GetByIdAsync(id);
             if (deposito == null) return NotFound();
-            return Ok(deposito);
+            return Ok(new
+            {
+                data = deposito,
+                links = new[]
+                {
+                    new { rel = "self", href = $"/api/deposito/{id}" },
+                    new { rel = "update", href = $"/api/deposito/{id}" },
+                    new { rel = "delete", href = $"/api/deposito/{id}" }
+                }
+            });
         }
 
         /// <summary>
@@ -54,6 +79,7 @@ namespace Sprint_4.Controllers
         /// <summary>
         /// Atualiza um depósito existente.
         /// </summary>
+        /// <param name="id">ID do depósito</param>
         [HttpPut("{id}")]
         [SwaggerRequestExample(typeof(Deposito), typeof(DepositoExample))]
         [SwaggerResponse(204, "Depósito atualizado.")]
@@ -68,6 +94,7 @@ namespace Sprint_4.Controllers
         /// <summary>
         /// Remove um depósito pelo ID.
         /// </summary>
+        /// <param name="id">ID do depósito</param>
         [HttpDelete("{id}")]
         [SwaggerResponse(204, "Depósito removido.")]
         [SwaggerResponse(404, "Depósito não encontrado.")]

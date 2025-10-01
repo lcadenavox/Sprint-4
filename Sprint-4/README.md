@@ -1,103 +1,58 @@
 # ENTREGA - 3º SPRINT
 
 ## Nomes dos integrantes
-- [Adicione aqui os nomes dos integrantes do grupo]
+- [Integrante 1]
+- [Integrante 2]
+- [Integrante 3]
+
+## Justificativa do Domínio
+Optamos por um domínio de gestão de manutenção automotiva com três entidades:
+- Moto: item de manutenção e serviço.
+- Mecanico: responsável pela execução dos serviços.
+- Deposito: local de armazenamento/apoio para peças e logística.
+Esse domínio é simples, familiar e cobre casos típicos de CRUD, além de permitir demonstrar paginação, HATEOAS e documentação Swagger com clareza.
 
 ## Justificativa da Arquitetura
-A arquitetura foi baseada em boas práticas REST, utilizando .NET 8 Web API. O projeto está organizado em camadas:
-- **Models**: Definição das entidades principais (`Moto`, `Mecanico`, `Deposito`).
-- **Data**: Contexto do Entity Framework para persistência em memória.
-- **Services**: Lógica de negócio e acesso aos dados.
-- **Controllers**: Endpoints RESTful, seguindo boas práticas (status codes, paginação, HATEOAS).
-- **Helpers**: Utilitários como links HATEOAS.
+API RESTful em .NET 8 (Web API), com camadas:
+- Models: `Moto`, `Mecanico`, `Deposito`.
+- Data: `AppDbContext` com EF Core InMemory.
+- Services: regras de negócio/acesso a dados por entidade.
+- Controllers: endpoints REST com status codes, paginação e HATEOAS.
+- Helpers: utilitários (ex.: links HATEOAS).
 
-Essa separação facilita manutenção, testes e escalabilidade.
+Boas práticas adotadas:
+- CRUD completo para as 3 entidades.
+- Paginação e HATEOAS no endpoint de listagem de `Moto`.
+- Swagger/OpenAPI com descrições, modelos e exemplos de payloads.
 
-## Instruções de Execução da API
-1. Certifique-se de ter o [.NET 8 SDK](https://dotnet.microsoft.com/download) instalado.
-2. No terminal, navegue até a pasta do projeto e execute:
-   ```bash
-   dotnet run --project Sprint-4/Sprint-4.csproj
-   ```
-3. Acesse a documentação Swagger em: [https://localhost:5001/swagger](https://localhost:5001/swagger) ou [http://localhost:5000/swagger](http://localhost:5000/swagger)
+## Instruções de execução da API
+1) Pré-requisito: .NET 8 SDK instalado.
+2) Executar:
+   - dotnet run --project Sprint-4/Sprint-4.csproj
+3) Swagger:
+   - http://localhost:5000/swagger ou https://localhost:5001/swagger
 
-## Exemplos de Uso dos Endpoints
-### Moto
-- **Listar motos (com paginação):**
-  ```http
-  GET /api/moto?page=1&pageSize=10
-  ```
-- **Obter moto por ID:**
-  ```http
-  GET /api/moto/1
-  ```
-- **Criar moto:**
-  ```http
-  POST /api/moto
-  Content-Type: application/json
-  {
-    "marca": "Honda",
-    "modelo": "CG 160",
-    "ano": 2022
-  }
-  ```
-- **Atualizar moto:**
-  ```http
-  PUT /api/moto/1
-  Content-Type: application/json
-  {
-    "marca": "Yamaha",
-    "modelo": "Factor",
-    "ano": 2023
-  }
-  ```
-- **Deletar moto:**
-  ```http
-  DELETE /api/moto/1
-  ```
+## Exemplos de uso dos endpoints
+- Moto
+  - GET /api/moto?page=1&pageSize=10
+  - GET /api/moto/1
+  - POST /api/moto
+  - PUT /api/moto/1
+  - DELETE /api/moto/1
+- Mecanico
+  - GET /api/mecanico?page=1&pageSize=10
+  - GET /api/mecanico/1
+  - POST /api/mecanico
+  - PUT /api/mecanico/1
+  - DELETE /api/mecanico/1
+- Depósito
+  - GET /api/deposito?page=1&pageSize=10
+  - GET /api/deposito/1
+  - POST /api/deposito
+  - PUT /api/deposito/1
+  - DELETE /api/deposito/1
 
-### Mecanico
-- **Listar mecânicos:**
-  ```http
-  GET /api/mecanico
-  ```
-- **Obter mecânico por ID:**
-  ```http
-  GET /api/mecanico/1
-  ```
-- **Criar mecânico:**
-  ```http
-  POST /api/mecanico
-  Content-Type: application/json
-  {
-    "nome": "João Silva",
-    "especialidade": "Motor"
-  }
-  ```
-
-### Depósito
-- **Listar depósitos:**
-  ```http
-  GET /api/deposito
-  ```
-- **Obter depósito por ID:**
-  ```http
-  GET /api/deposito/1
-  ```
-- **Criar depósito:**
-  ```http
-  POST /api/deposito
-  Content-Type: application/json
-  {
-    "nome": "Depósito Central",
-    "endereco": "Rua das Flores, 123"
-  }
-  ```
+Observação: Exemplos de payloads estão no Swagger UI (Swashbuckle.AspNetCore.Filters).
 
 ## Comando para rodar os testes
-Caso existam testes automatizados, utilize:
-```bash
-dotnet test Sprint-4/Sprint-4.csproj
-```
-
-Se precisar de exemplos de testes, posso ajudar a criar!
+- dotnet test Sprint-4/Sprint-4.csproj

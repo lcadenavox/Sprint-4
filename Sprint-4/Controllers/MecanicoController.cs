@@ -17,13 +17,26 @@ namespace Sprint_4.Controllers
         }
 
         /// <summary>
-        /// Lista todos os mecânicos.
+        /// Lista todos os mecânicos com paginação.
         /// </summary>
         [HttpGet]
         [SwaggerResponse(200, "Lista de mecânicos.", typeof(IEnumerable<Mecanico>))]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            return Ok(_service.GetAll().ToList());
+            var query = _service.GetAll();
+            var total = query.Count();
+            var itens = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var result = new
+            {
+                data = itens,
+                links = new[]
+                {
+                    new { rel = "self", href = $"/api/mecanico?page={page}&pageSize={pageSize}" },
+                    new { rel = "next", href = $"/api/mecanico?page={page+1}&pageSize={pageSize}" }
+                },
+                total
+            };
+            return Ok(result);
         }
 
         /// <summary>
@@ -36,7 +49,16 @@ namespace Sprint_4.Controllers
         {
             var mecanico = await _service.GetByIdAsync(id);
             if (mecanico == null) return NotFound();
-            return Ok(mecanico);
+            return Ok(new
+            {
+                data = mecanico,
+                links = new[]
+                {
+                    new { rel = "self", href = $"/api/mecanico/{id}" },
+                    new { rel = "update", href = $"/api/mecanico/{id}" },
+                    new { rel = "delete", href = $"/api/mecanico/{id}" }
+                }
+            });
         }
 
         /// <summary>

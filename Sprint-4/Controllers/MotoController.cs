@@ -19,6 +19,8 @@ namespace Sprint_4.Controllers
         /// <summary>
         /// Lista todas as motos com paginação.
         /// </summary>
+        /// <param name="page">Número da página (inicia em 1)</param>
+        /// <param name="pageSize">Quantidade de itens por página</param>
         [HttpGet]
         [SwaggerResponse(200, "Lista de motos.", typeof(IEnumerable<Moto>))]
         public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
@@ -26,14 +28,21 @@ namespace Sprint_4.Controllers
             var query = _service.GetAll();
             var total = query.Count();
             var motos = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            var hasNext = page * pageSize < total;
+            var hasPrev = page > 1;
+
+            var links = new List<object>
+            {
+                new { rel = "self", href = $"/api/moto?page={page}&pageSize={pageSize}" }
+            };
+            if (hasPrev) links.Add(new { rel = "prev", href = $"/api/moto?page={page-1}&pageSize={pageSize}" });
+            if (hasNext) links.Add(new { rel = "next", href = $"/api/moto?page={page+1}&pageSize={pageSize}" });
+
             var result = new
             {
                 data = motos,
-                links = new[]
-                {
-                    new { rel = "self", href = $"/api/moto?page={page}&pageSize={pageSize}" },
-                    new { rel = "next", href = $"/api/moto?page={page+1}&pageSize={pageSize}" }
-                },
+                links,
                 total
             };
             return Ok(result);
@@ -42,6 +51,7 @@ namespace Sprint_4.Controllers
         /// <summary>
         /// Obtém uma moto pelo ID.
         /// </summary>
+        /// <param name="id">ID da moto</param>
         [HttpGet("{id}")]
         [SwaggerResponse(200, "Moto encontrada.", typeof(Moto))]
         [SwaggerResponse(404, "Moto não encontrada.")]
@@ -76,6 +86,7 @@ namespace Sprint_4.Controllers
         /// <summary>
         /// Atualiza uma moto existente.
         /// </summary>
+        /// <param name="id">ID da moto</param>
         [HttpPut("{id}")]
         [SwaggerRequestExample(typeof(Moto), typeof(MotoExample))]
         [SwaggerResponse(204, "Moto atualizada.")]
@@ -90,6 +101,7 @@ namespace Sprint_4.Controllers
         /// <summary>
         /// Remove uma moto pelo ID.
         /// </summary>
+        /// <param name="id">ID da moto</param>
         [HttpDelete("{id}")]
         [SwaggerResponse(204, "Moto removida.")]
         [SwaggerResponse(404, "Moto não encontrada.")]

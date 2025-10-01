@@ -13,6 +13,10 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new() { Title = "API Depósito", Version = "v1", Description = "API para gerenciamento de motos, mecânicos e depósitos." });
     options.EnableAnnotations();
     options.ExampleFilters();
+
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
 });
 builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("DepositoDb"));
