@@ -24,6 +24,23 @@ builder.Services.AddScoped<MotoService>();
 builder.Services.AddScoped<MecanicoService>();
 builder.Services.AddScoped<DepositoService>();
 
+// CORS
+const string AllowExpo = "AllowExpo";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: AllowExpo, policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:8081",
+                "http://127.0.0.1:8081",
+                "http://localhost:19006"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,8 +52,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Ative a policy de CORS antes de Authorization/MapControllers
+app.UseCors(AllowExpo);
+
 app.UseAuthorization();
 
 app.MapControllers();
+// app.MapControllers().RequireCors(AllowExpo); // opcional
 
 app.Run();
