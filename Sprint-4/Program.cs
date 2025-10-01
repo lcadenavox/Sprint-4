@@ -10,15 +10,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new() { Title = "API Oficina", Version = "v1", Description = "API para gerenciamento de motos, mecânicos e oficinas." });
+    options.SwaggerDoc("v1", new() { Title = "API Depósito", Version = "v1", Description = "API para gerenciamento de motos, mecânicos e depósitos." });
     options.EnableAnnotations();
     options.ExampleFilters();
 });
 builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
-builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("OficinaDb"));
+builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("DepositoDb"));
 builder.Services.AddScoped<MotoService>();
 builder.Services.AddScoped<MecanicoService>();
-builder.Services.AddScoped<OficinaService>();
+builder.Services.AddScoped<DepositoService>();
 
 var app = builder.Build();
 

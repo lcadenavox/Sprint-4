@@ -5,7 +5,7 @@
 
 ## Justificativa da Arquitetura
 A arquitetura foi baseada em boas práticas REST, utilizando .NET 8 Web API. O projeto está organizado em camadas:
-- **Models**: Definição das entidades principais (`Moto`, `Mecanico`, `Oficina`).
+- **Models**: Definição das entidades principais (`Moto`, `Mecanico`, `Deposito`).
 - **Data**: Contexto do Entity Framework para persistência em memória.
 - **Services**: Lógica de negócio e acesso aos dados.
 - **Controllers**: Endpoints RESTful, seguindo boas práticas (status codes, paginação, HATEOAS).
@@ -75,21 +75,21 @@ Essa separação facilita manutenção, testes e escalabilidade.
   }
   ```
 
-### Oficina
-- **Listar oficinas:**
+### Depósito
+- **Listar depósitos:**
   ```http
-  GET /api/oficina
+  GET /api/deposito
   ```
-- **Obter oficina por ID:**
+- **Obter depósito por ID:**
   ```http
-  GET /api/oficina/1
+  GET /api/deposito/1
   ```
-- **Criar oficina:**
+- **Criar depósito:**
   ```http
-  POST /api/oficina
+  POST /api/deposito
   Content-Type: application/json
   {
-    "nome": "Oficina Central",
+    "nome": "Depósito Central",
     "endereco": "Rua das Flores, 123"
   }
   ```

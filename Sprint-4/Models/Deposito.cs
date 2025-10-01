@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Sprint_4.Models
 {
-    public class Oficina
+    public class Deposito
     {
         public int Id { get; set; }
         [Required]
