@@ -1,9 +1,9 @@
 # ENTREGA - 3º SPRINT
 
 ## Nomes dos integrantes
-- [Integrante 1]
-- [Integrante 2]
-- [Integrante 3]
+- [Leonardo Cadena de Souza - rm557528]
+- [Julia Vasconcelos - rm558785]
+- [Davi Gonzaga - rm554890]
 
 ## Justificativa do Domínio
 Optamos por um domínio de gestão de manutenção automotiva com três entidades:
