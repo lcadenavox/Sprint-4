@@ -10,5 +10,6 @@ namespace Sprint_4.Data
         public DbSet<Moto> Motos { get; set; }
         public DbSet<Mecanico> Mecanicos { get; set; }
         public DbSet<Deposito> Depositos { get; set; }
+        public DbSet<Oficina> Oficinas { get; set; }
     }
 }

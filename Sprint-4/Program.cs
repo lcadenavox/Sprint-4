@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new() { Title = "API Depósito", Version = "v1", Description = "API para gerenciamento de motos, mecânicos e depósitos." });
+    options.SwaggerDoc("v1", new() { Title = "API Depósito", Version = "v1", Description = "API para gerenciamento de motos, mecânicos, depósitos e oficinas." });
     options.EnableAnnotations();
     options.ExampleFilters();
 
@@ -23,6 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("Depo
 builder.Services.AddScoped<MotoService>();
 builder.Services.AddScoped<MecanicoService>();
 builder.Services.AddScoped<DepositoService>();
+builder.Services.AddScoped<OficinaService>();
 
 // CORS
 const string AllowExpo = "AllowExpo";
