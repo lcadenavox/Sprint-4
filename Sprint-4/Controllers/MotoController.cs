@@ -7,7 +7,8 @@ using Swashbuckle.AspNetCore.Filters;
 namespace Sprint_4.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class MotoController : ControllerBase
     {
         private readonly MotoService _service;
