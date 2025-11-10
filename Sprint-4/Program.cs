@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Controllers
 builder.Services.AddControllers();
 
 // API Versioning
@@ -68,21 +68,23 @@ builder.Services.AddSwaggerGen(options =>
 
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+    if (System.IO.File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+    }
 });
 
 builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
+// DB e Services
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("DepositoDb"));
 builder.Services.AddScoped<MotoService>();
 builder.Services.AddScoped<MecanicoService>();
 builder.Services.AddScoped<DepositoService>();
 builder.Services.AddScoped<OficinaService>();
-
-// Simple ML service registration
 builder.Services.AddSingleton<SentimentService>();
 
-// CORS
+// CORS (inclui http e https das portas usadas pelo Expo/Metro)
 const string AllowExpo = "AllowExpo";
 builder.Services.AddCors(options =>
 {
@@ -94,47 +96,22 @@ builder.Services.AddCors(options =>
                 "http://127.0.0.1:8081",
                 "http://localhost:8082",
                 "http://127.0.0.1:8082",
-                "http://localhost:19006"
+                "http://localhost:19006",
+                "https://localhost:8081",
+                "https://127.0.0.1:8081",
+                "https://localhost:19006"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
 
-// Health Checks
+// Health
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-// API Key middleware
-app.Use(async (context, next) =>
-{
-    // Allow health checks and swagger without API key
-    var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
-    if (path.StartsWith("/health") || path.StartsWith("/swagger"))
-    {
-        await next();
-        return;
-    }
-
-    if (!context.Request.Headers.TryGetValue("X-Api-Key", out var provided))
-    {
-        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        await context.Response.WriteAsync("API Key missing");
-        return;
-    }
-    var configuredKey = builder.Configuration["ApiKey"] ?? "dev-key"; // default for local
-    if (!string.Equals(provided.ToString(), configuredKey, StringComparison.Ordinal))
-    {
-        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        await context.Response.WriteAsync("Invalid API Key");
-        return;
-    }
-
-    await next();
-});
-
-// Configure the HTTP request pipeline.
+// Swagger (Dev)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -150,14 +127,52 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Ative a policy de CORS antes de Authorization/MapControllers
+// Aplique CORS ANTES do middleware de API Key
 app.UseCors(AllowExpo);
+
+// API Key middleware (permite OPTIONS e health/swagger sem chave)
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
+
+    // Libera preflight para passar CORS
+    if (HttpMethods.Options.Equals(context.Request.Method, StringComparison.OrdinalIgnoreCase))
+    {
+        await next();
+        return;
+    }
+
+    // Libera health e swagger
+    if (path.StartsWith("/swagger") || path.Contains("/health"))
+    {
+        await next();
+        return;
+    }
+
+    if (!context.Request.Headers.TryGetValue("X-Api-Key", out var provided))
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        await context.Response.WriteAsync("API Key missing");
+        return;
+    }
+    var configuredKey = app.Configuration["ApiKey"] ?? "dev-key"; // default local
+    if (!string.Equals(provided.ToString(), configuredKey, StringComparison.Ordinal))
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        await context.Response.WriteAsync("Invalid API Key");
+        return;
+    }
+
+    await next();
+});
 
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Health endpoint
+// Health endpoints (mantém /health e cobre /api e /api/v1)
 app.MapHealthChecks("/health");
+app.MapHealthChecks("/api/health");
+app.MapHealthChecks("/api/v1/health");
 
 app.Run();
